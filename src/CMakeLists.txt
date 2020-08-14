@@ -11,8 +11,12 @@ target_include_directories(vcalc PUBLIC ${ANTLR_GEN_DIR})
 # Ensure that the antlr4-runtime is available.
 add_dependencies(vcalc antlr)
 
-# Add the antlr runtime and parser as libraries to link.
-target_link_libraries(vcalc parser antlr4-runtime)
+# Find the libraries that correspond to the LLVM components
+# that we wish to use
+llvm_map_components_to_libnames(llvm_libs core)
+
+# Add the LLVM, antlr runtime and parser as libraries to link.
+target_link_libraries(vcalc parser antlr4-runtime ${llvm_libs})
 
 # Symbolic link our executable to the base directory so we don't have to go searching for it.
 symlink_to_bin("vcalc")

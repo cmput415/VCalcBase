@@ -4,6 +4,9 @@
   "testedExecutablePaths": {
     "<team id>": "<path_to_vcalc_exe>"
   },
+  "runtimes": {
+    "<team id>": "<path_to_libvcalcrt.so>"
+  },
   "toolchains": {
     "vcalc": [
       {
@@ -21,7 +24,9 @@
         "arguments": [
          "$INPUT"
         ],
-        "output": "-"
+        "output": "-",
+        "usesRuntime": true,
+        "usesInStr": true
       }
     ]
   }

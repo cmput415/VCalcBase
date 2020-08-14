@@ -10,7 +10,7 @@ find_package(Java COMPONENTS Runtime REQUIRED) # Need java to run ANTLR, but onl
 include("${CMAKE_SOURCE_DIR}/cmake/get_llvm.cmake")
 
 # Set C++ standards.
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 
 # Add CXX flags.
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
