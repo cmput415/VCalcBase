@@ -17,10 +17,10 @@ things briefly here that are better explained there. The steps here will expect
 you have some knowledge of what's going on inside the script.
 
   1. Checkout LLVM to a to your home directory from
-     [OUR FORK](git@github.com:cmput415/llvm-project.git), checkout the 10.0.0
+     [OUR FORK](https://github.com/cmput415/llvm-project), checkout the 10.0.0
      release, and change the directory in your script.
      1. `cd $HOME`
-     1. `git clone git@github.com:cmput415/llvm.git`
+     1. `git clone git@github.com:cmput415/llvm-project.git`
      1. `cd llvm`
      1. `git checkout llvmorg-10.0.0`
   1. Add these configuration lines to your `~/.bashrc` on linux or
