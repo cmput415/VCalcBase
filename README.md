@@ -17,12 +17,12 @@ things briefly here that are better explained there. The steps here will expect
 you have some knowledge of what's going on inside the script.
 
   1. Checkout LLVM to a to your home directory from
-     [OUR FORK](https://github.com/cmput415/llvm), checkout the 6.0.0 release,
-     and change the directory in your script.
+     [OUR FORK](git@github.com:cmput415/llvm-project.git), checkout the 10.0.0
+     release, and change the directory in your script.
      1. `cd $HOME`
      1. `git clone git@github.com:cmput415/llvm.git`
      1. `cd llvm`
-     1. `git checkout release_60`
+     1. `git checkout llvmorg-10.0.0`
   1. Add these configuration lines to your `~/.bashrc` on linux or
      `~/.bash_profile` on MacOS to setup the next steps. You should restart your
      terminal after editing these files.
@@ -31,22 +31,10 @@ you have some knowledge of what's going on inside the script.
       export LLVM_DIR="$LLVM_INS/lib/cmake/llvm/" # Don't change me.
       export PATH="$LLVM_INS/bin:$PATH" # Don't change me
       ```
-  1. Point the build script at your source directory. If aren't customizing your
-     build and downloaded at llvm at `$HOME/llvm` you can skip this.
-     1. In `configureLLVM.sh` change `SRC_DIR` to the path to the llvm
-        directory.
-  1. Pick your build directory. The default is a subdirectory of the source
-     directory (an acceptable solution if you want to just skip this). Remember
-     this for later either way.
-     1. In `configureLLVM.sh` change `BLD_DIR` to your preferred build
-        directory.
-  1. DO NOT CHANGE THE INSTALL DIRECTORY VARIABLE.
-  1. Choose your build type. The default (`Release`) is already uncommented.
-     If you want to change it then you should comment the `Release` line and
-     uncomment another line.
+  1. If you want a debug build you may change this by looking at Step 2 in the
+     `scripts/configureLLVM.sh` script.
   1. Run `configureLLVM.sh`.
-  1. `cd <build_directory>` where `<build_directory>` is the path you chose
-     earlier (`$LLVM_INS/build` if you did not change it).
+  1. `cd $HOME/llvm-project/build`
   1. `make -j x` where x is the number of compilation threads. `4` is safe if
      you have >= 8gb RAM. Haven't experimented much here. The script is set up
      to try to use a better linker, but if you end up with your system linker
