@@ -33,3 +33,6 @@ include_directories("${CMAKE_SOURCE_DIR}/include")
 
 # Build the source directory.
 add_subdirectory("${CMAKE_SOURCE_DIR}/src")
+
+# Add the runtime directory.
+add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/runtime")
