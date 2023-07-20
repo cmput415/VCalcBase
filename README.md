@@ -5,10 +5,10 @@ Author: Braedy Kuzma (braedy@ualberta.ca)
 Updated by: Deric Cheung (dacheung@ualberta.ca)
 
 # Usage
-## Installing LLVM
-In this assignment and your final project you will be working with LLVM. Due
-to the complex nature (and size) of the project we did not want to include LLVM
-as a subproject. Therefore, there is some additional setup required to get your
+## Installing MLIR
+In this assignment and your final project you will be working with MLIR and LLVM.
+Due to the complex nature (and size) of the project we did not want to include
+MLIR as a subproject. Therefore, there is some additional setup required to get your
 build up and running.
 
 ### On a personal machine
