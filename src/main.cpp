@@ -6,6 +6,8 @@
 #include "tree/ParseTree.h"
 #include "tree/ParseTreeWalker.h"
 
+#include "BackEnd.h"
+
 #include <iostream>
 #include <fstream>
 
@@ -37,6 +39,9 @@ int main(int argc, char **argv) {
   // MyVisitor visitor;
   // Visit the tree
   // visitor.visit(tree);
+
+  BackEnd backend;
+  backend.emitMain();
 
   // HOW TO WRITE OUT.
   // std::ofstream out(argv[2]);
