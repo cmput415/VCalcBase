@@ -5,10 +5,10 @@ Author: Braedy Kuzma (braedy@ualberta.ca)
 Updated by: Deric Cheung (dacheung@ualberta.ca)
 
 # Usage
-## Installing LLVM
-In this assignment and your final project you will be working with LLVM. Due
-to the complex nature (and size) of the project we did not want to include LLVM
-as a subproject. Therefore, there is some additional setup required to get your
+## Installing MLIR
+In this assignment and your final project you will be working with MLIR and LLVM.
+Due to the complex nature (and size) of the project we did not want to include
+MLIR as a subproject. Therefore, there is some additional setup required to get your
 build up and running.
 
 ### On a personal machine
@@ -17,43 +17,40 @@ in the scripts folder and understand as much as possible. We'll touch some
 things briefly here that are better explained there. The steps here will expect
 you have some knowledge of what's going on inside the script.
 
-  1. Checkout LLVM to a to your home directory from
-     [OUR FORK](https://github.com/cmput415/llvm-project), checkout the 10.0.0
-     release, and change the directory in your script.
+  1. Checkout LLVM to your machine
      1. `cd $HOME`
-     1. `git clone git@github.com:cmput415/llvm-project.git`
-     1. `cd llvm`
-     1. `git checkout llvmorg-10.0.0`
-  1. Add these configuration lines to your `~/.bashrc` on linux or
-     `~/.bash_profile` on MacOS to setup the next steps. You should restart your
+     1. `git clone https://github.com/llvm/llvm-project.git`
+     1. `cd llvm-project`
+     1. `git checkout llvmorg-16.0.4`
+  1. Build MLIR
+     1. `mkdir build`
+     1. `cd build`
+     1. ```cmake -G Ninja ../llvm \
+             -DLLVM_ENABLE_PROJECTS=mlir \
+             -DLLVM_BUILD_EXAMPLES=ON \
+             -DLLVM_TARGETS_TO_BUILD="Native" \
+             -DCMAKE_BUILD_TYPE=Release \
+             -DLLVM_ENABLE_ASSERTIONS=ON
+        ```
+     1. `cmake --build . --target check-mlir`
+  1. Add these configuration lines to your ``~/.bashrc`` on linux or
+     ``~/.zprofile`` on MacOS to setup the next steps. You should restart your
      terminal after editing these files.
       ```bash
-      export LLVM_INS="$HOME/llvm-ins/" # Change me if you really want.
-      export LLVM_DIR="$LLVM_INS/lib/cmake/llvm/" # Don't change me.
-      export PATH="$LLVM_INS/bin:$PATH" # Don't change me
+      export MLIR_INS="$HOME/llvm-project/build/"
+      export MLIR_DIR="$MLIR_INS/lib/cmake/mlir/" # Don't change me.
+      export PATH="$MLIR_INS/bin:$PATH" # Don't change me
       ```
-  1. If you want a debug build you may change this by looking at Step 2 in the
-     `scripts/configureLLVM.sh` script.
-  1. Run `configureLLVM.sh`.
-  1. `cd $HOME/llvm-project/build`
-  1. `make -j x` where x is the number of compilation threads. `4` is safe if
-     you have >= 8gb RAM. Haven't experimented much here. The script is set up
-     to try to use a better linker, but if you end up with your system linker
-     the memory usage can balloon quickly and paging can become a problem. If
-     you're having problems with hanging or system lag while compiling you
-     might want to kill this (you won't lose your progress if `ctrl+c` works)
-     and run with less threads.
-  1. Run `make install`.
-  1. CMake should automatically pick up your built llvm now. You should return
+  1. CMake should automatically pick up your built mlir now. You should return
      to the assignment specification to complete setup.
 
 ### On university machines
-You won't be building LLVM on the university machines: AICT wouldn't be very
+You won't be building MLIR on the university machines: AICT wouldn't be very
 happy with you. Instead, we are providing a **RELEASE** build available for
 everyone.
   1. Follow the instructions on the [setup
      page](https://webdocs.cs.ualberta.ca/~c415/setup/) for the CS computers and
-     LLVM will be available to you.
+     MLIR/LLVM will be available to you.
 
 ## Building
 ### Linux
