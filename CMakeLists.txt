@@ -1,5 +1,4 @@
-cmake_minimum_required(VERSION 3.0)
-cmake_policy(SET CMP0075 NEW)
+cmake_minimum_required(VERSION 3.12)
 project(VCalcBase)
 
 # Ensure tool dependencies.
