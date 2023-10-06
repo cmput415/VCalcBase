@@ -3,6 +3,7 @@ The base cmake setup for VCalc assignment.
 
 Author: Braedy Kuzma (braedy@ualberta.ca)  
 Updated by: Deric Cheung (dacheung@ualberta.ca)
+Updated by: Quinn Pham (qpham@ualberta.ca)
 
 # Usage
 ## Installing MLIR
@@ -12,45 +13,17 @@ MLIR as a subproject. Therefore, there is some additional setup required to get 
 build up and running.
 
 ### On a personal machine
-The first thing you should do is have a look into the `configureLLVM.sh` script
-in the scripts folder and understand as much as possible. We'll touch some
-things briefly here that are better explained there. The steps here will expect
-you have some knowledge of what's going on inside the script.
-
-  1. Checkout LLVM to your machine
-     1. `cd $HOME`
-     1. `git clone https://github.com/llvm/llvm-project.git`
-     1. `cd llvm-project`
-     1. `git checkout llvmorg-16.0.4`
-  1. Build MLIR
-     1. `mkdir build`
-     1. `cd build`
-     1. ```cmake -G Ninja ../llvm \
-             -DLLVM_ENABLE_PROJECTS=mlir \
-             -DLLVM_BUILD_EXAMPLES=ON \
-             -DLLVM_TARGETS_TO_BUILD="Native" \
-             -DCMAKE_BUILD_TYPE=Release \
-             -DLLVM_ENABLE_ASSERTIONS=ON
-        ```
-     1. `cmake --build . --target check-mlir`
-  1. Add these configuration lines to your ``~/.bashrc`` on linux or
-     ``~/.zprofile`` on MacOS to setup the next steps. You should restart your
-     terminal after editing these files.
-      ```bash
-      export MLIR_INS="$HOME/llvm-project/build/"
-      export MLIR_DIR="$MLIR_INS/lib/cmake/mlir/" # Don't change me.
-      export PATH="$MLIR_INS/bin:$PATH" # Don't change me
-      ```
-  1. CMake should automatically pick up your built mlir now. You should return
-     to the assignment specification to complete setup.
+  1. Follow the instructions on the
+     [setup page](https://webdocs.cs.ualberta.ca/~c415/setup/) for your
+     machine.
 
 ### On university machines
 You won't be building MLIR on the university machines: AICT wouldn't be very
 happy with you. Instead, we are providing a **RELEASE** build available for
 everyone.
-  1. Follow the instructions on the [setup
-     page](https://webdocs.cs.ualberta.ca/~c415/setup/) for the CS computers and
-     MLIR/LLVM will be available to you.
+  1. Follow the instructions on the
+     [setup page](https://webdocs.cs.ualberta.ca/~c415/setup/) for the CS
+     computers and MLIR/LLVM will be available to you.
 
 ## Building
 ### Linux
