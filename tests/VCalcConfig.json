@@ -20,7 +20,7 @@
       },
       {
         "stepName": "lli",
-        "executablePath": "/cshome/c415/415-resources/llvmi/bin/lli",
+        "executablePath": "/cshome/cmput415/415-resources/llvm-project/build/bin/lli",
         "arguments": [
          "$INPUT"
         ],
