@@ -51,10 +51,10 @@ void BackEnd::setupPrintf() {
                                builder->getStringAttr(gvalue), /*alignment=*/0);
 
     // Create a function declaration for printf, the signature is:
-    //   * `i32 (i8*, ...)`
+    //   * `i32 (ptr, ...)`
     mlir::Type intType = mlir::IntegerType::get(&context, 32);
-    auto llvmI8PtrTy = mlir::LLVM::LLVMPointerType::get(charType);
-    auto llvmFnType = mlir::LLVM::LLVMFunctionType::get(intType, llvmI8PtrTy,
+    auto ptrTy = mlir::LLVM::LLVMPointerType::get(&context);
+    auto llvmFnType = mlir::LLVM::LLVMFunctionType::get(intType, ptrTy,
                                                         /*isVarArg=*/true);
 
     // Insert the printf function into the body of the parent module.
@@ -73,12 +73,53 @@ void BackEnd::printNewline() {
     mlir::Value globalPtr = builder->create<mlir::LLVM::AddressOfOp>(loc, global);
     mlir::Value cst0 = builder->create<mlir::LLVM::ConstantOp>(loc, builder->getI64Type(),
                                                         builder->getIndexAttr(0));
-
+    mlir::Type ptrType = mlir::LLVM::LLVMPointerType::get(&context);
     mlir::Type charType = mlir::IntegerType::get(&context, 8);
     mlir::Value newLine = builder->create<mlir::LLVM::GEPOp>(loc,
-                          mlir::LLVM::LLVMPointerType::get(charType),
-                          globalPtr, mlir::ArrayRef<mlir::Value>({cst0, cst0}));
+                          ptrType, global.getType(), globalPtr, mlir::ValueRange({cst0, cst0}));
 
     mlir::LLVM::LLVMFuncOp printfFunc = module.lookupSymbol<mlir::LLVM::LLVMFuncOp>("printf");
     builder->create<mlir::LLVM::CallOp>(loc, printfFunc, newLine);
 }
+
+// void BackEnd::setupPrintf() {
+//     // Create the global string "\n"
+//     mlir::Type charType = mlir::IntegerType::get(&context, 8);
+//     auto gvalue = mlir::StringRef("\n\0", 2);
+//     auto type = mlir::LLVM::LLVMArrayType::get(charType, gvalue.size());
+//     builder->create<mlir::LLVM::GlobalOp>(loc, type, /*isConstant=*/true,
+//                                mlir::LLVM::Linkage::Internal, "newline",
+//                                builder->getStringAttr(gvalue), /*alignment=*/0);
+
+//     // Create a function declaration for printf, the signature is:
+//     //   * `i32 (i8*, ...)`
+//     mlir::Type intType = mlir::IntegerType::get(&context, 32);
+//     auto llvmI8PtrTy = mlir::LLVM::LLVMPointerType::get(charType);
+//     auto llvmFnType = mlir::LLVM::LLVMFunctionType::get(intType, llvmI8PtrTy,
+//                                                         /*isVarArg=*/true);
+
+//     // Insert the printf function into the body of the parent module.
+//     builder->create<mlir::LLVM::LLVMFuncOp>(loc, "printf", llvmFnType);
+// }
+
+// void BackEnd::printNewline() {
+//     /* Note: a lot of this comes from the MLIR "toy" tutorial */
+//     mlir::LLVM::GlobalOp global;
+//     if (!(global = module.lookupSymbol<mlir::LLVM::GlobalOp>("newline"))) {
+//         llvm::errs() << "missing format string!\n";
+//         return;
+//     }
+
+//     // Get the pointer to the first character in the global string.
+//     mlir::Value globalPtr = builder->create<mlir::LLVM::AddressOfOp>(loc, global);
+//     mlir::Value cst0 = builder->create<mlir::LLVM::ConstantOp>(loc, builder->getI64Type(),
+//                                                         builder->getIndexAttr(0));
+
+//     mlir::Type charType = mlir::IntegerType::get(&context, 8);
+//     mlir::Value newLine = builder->create<mlir::LLVM::GEPOp>(loc,
+//                           mlir::LLVM::LLVMPointerType::get(charType),
+//                           globalPtr, mlir::ArrayRef<mlir::Value>({cst0, cst0}));
+
+//     mlir::LLVM::LLVMFuncOp printfFunc = module.lookupSymbol<mlir::LLVM::LLVMFuncOp>("printf");
+//     builder->create<mlir::LLVM::CallOp>(loc, printfFunc, newLine);
+// }
