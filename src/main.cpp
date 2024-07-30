@@ -40,12 +40,11 @@ int main(int argc, char **argv) {
   // Visit the tree
   // visitor.visit(tree);
 
+  std::ofstream os(argv[2]);
   BackEnd backend;
-  backend.emitMain();
-
-  // HOW TO WRITE OUT.
-  // std::ofstream out(argv[2]);
-  // out << "This is out...\n";
+  backend.emitModule();
+  backend.lowerDialects();
+  backend.dumpLLVM(os);
 
   return 0;
 }
