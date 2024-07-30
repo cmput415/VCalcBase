@@ -3,19 +3,22 @@
 #include "BackEnd.h"
 
 BackEnd::BackEnd() : loc(mlir::UnknownLoc::get(&context)) {
-
     // Load Dialects.
     context.loadDialect<mlir::LLVM::LLVMDialect>();
     context.loadDialect<mlir::arith::ArithDialect>();
     context.loadDialect<mlir::scf::SCFDialect>();
     context.loadDialect<mlir::cf::ControlFlowDialect>();
     context.loadDialect<mlir::memref::MemRefDialect>(); 
-    
+
+    // Initialize the MLIR context 
     builder = std::make_shared<mlir::OpBuilder>(&context);
     module = mlir::ModuleOp::create(builder->getUnknownLoc());
     builder->setInsertionPointToStart(module.getBody());
 
+    // Some intial setup to get off the ground 
     setupPrintf();
+    createGlobalString("%c\0", "charFormat");
+    createGlobalString("%d\0", "intFormat");
 }
 
 int BackEnd::emitModule() {
@@ -26,22 +29,38 @@ int BackEnd::emitModule() {
     mlir::Block *entry = mainFunc.addEntryBlock();
     builder->setInsertionPointToStart(entry);
 
-    printNewline();
+    /*--------------- Fill the MLIR module here ---------------*/
 
+    // Get the integer format string we already created.   
+    mlir::LLVM::GlobalOp formatString;
+    if (!(formatString = module.lookupSymbol<mlir::LLVM::GlobalOp>("intFormat"))) {
+        llvm::errs() << "missing format string!\n";
+        return 1;
+    }
+
+    // Get the format string and print 415
+    mlir::Value formatStringPtr = builder->create<mlir::LLVM::AddressOfOp>(loc, formatString); 
+    mlir::Value intToPrint = builder->create<mlir::LLVM::ConstantOp>(loc, intType, 415); 
+    mlir::ValueRange args = {formatStringPtr, intToPrint}; 
+    mlir::LLVM::LLVMFuncOp printfFunc = module.lookupSymbol<mlir::LLVM::LLVMFuncOp>("printf"); 
+    builder->create<mlir::LLVM::CallOp>(loc, printfFunc, args);
+
+    // Return 0
     mlir::Value zero = builder->create<mlir::LLVM::ConstantOp>(loc, intType, builder->getIntegerAttr(intType, 0));
-    builder->create<mlir::LLVM::ReturnOp>(builder->getUnknownLoc(), zero);
+    builder->create<mlir::LLVM::ReturnOp>(builder->getUnknownLoc(), zero);    
+    
+    /*--------------- End filling MLIR module ---------------*/
 
     module.dump();
 
     if (mlir::failed(mlir::verify(module))) {
         module.emitError("module failed to verify");
-        return -1;
+        return 1;
     }
     return 0;
 }
 
 int BackEnd::lowerDialects() {
-
     // Set up the MLIR pass manager to iteratively lower all the Ops
     mlir::PassManager pm(&context);
 
@@ -65,7 +84,6 @@ int BackEnd::lowerDialects() {
         llvm::errs() << "Pass pipeline failed\n";
         return 1;
     }
-
     return 0;
 }
 
@@ -82,14 +100,6 @@ void BackEnd::dumpLLVM(std::ostream &os) {
 }
 
 void BackEnd::setupPrintf() {
-    // Create the global string "\n"
-    mlir::Type charType = mlir::IntegerType::get(&context, 8);
-    auto gvalue = mlir::StringRef("\n\0", 2);
-    auto type = mlir::LLVM::LLVMArrayType::get(charType, gvalue.size());
-    builder->create<mlir::LLVM::GlobalOp>(loc, type, /*isConstant=*/true,
-                               mlir::LLVM::Linkage::Internal, "newline",
-                               builder->getStringAttr(gvalue), /*alignment=*/0);
-
     // Create a function declaration for printf, the signature is:
     //   * `i32 (ptr, ...)`
     mlir::Type intType = mlir::IntegerType::get(&context, 32);
@@ -101,23 +111,16 @@ void BackEnd::setupPrintf() {
     builder->create<mlir::LLVM::LLVMFuncOp>(loc, "printf", llvmFnType);
 }
 
-void BackEnd::printNewline() {
-    /* Note: a lot of this comes from the MLIR "toy" tutorial */
-    mlir::LLVM::GlobalOp global;
-    if (!(global = module.lookupSymbol<mlir::LLVM::GlobalOp>("newline"))) {
-        llvm::errs() << "missing format string!\n";
-        return;
-    }
+void BackEnd::createGlobalString(const char *str, const char *string_name) {
 
-    // Get the pointer to the first character in the global string.
-    mlir::Value globalPtr = builder->create<mlir::LLVM::AddressOfOp>(loc, global);
-    mlir::Value cst0 = builder->create<mlir::LLVM::ConstantOp>(loc, builder->getI64Type(),
-                                                        builder->getIndexAttr(0));
-    mlir::Type ptrType = mlir::LLVM::LLVMPointerType::get(&context);
     mlir::Type charType = mlir::IntegerType::get(&context, 8);
-    mlir::Value newLine = builder->create<mlir::LLVM::GEPOp>(loc,
-                          ptrType, global.getType(), globalPtr, mlir::ValueRange({cst0, cst0}));
 
-    mlir::LLVM::LLVMFuncOp printfFunc = module.lookupSymbol<mlir::LLVM::LLVMFuncOp>("printf");
-    builder->create<mlir::LLVM::CallOp>(loc, printfFunc, newLine);
+    // create string and string type
+    auto mlir_string = mlir::StringRef(str, strlen(str) + 1);
+    auto mlir_string_ty = mlir::LLVM::LLVMArrayType::get(charType, mlir_string.size());
+
+    builder->create<mlir::LLVM::GlobalOp>(loc, mlir_string_ty, /*isConstant=*/true,
+                            mlir::LLVM::Linkage::Internal, string_name,
+                            builder->getStringAttr(mlir_string), /*alignment=*/0);
+    return;
 }
