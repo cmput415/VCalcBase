@@ -28,24 +28,17 @@ int main(int argc, char **argv) {
   // Get the root of the parse tree. Use your base rule name.
   antlr4::tree::ParseTree *tree = parser.file();
 
-  // HOW TO USE A LISTENER
-  // Make the listener
-  // MyListener listener;
-  // Walk the tree
-  // antlr4::tree::ParseTreeWalker::DEFAULT.walk(&listener, tree);
-
   // HOW TO USE A VISITOR
   // Make the visitor
   // MyVisitor visitor;
   // Visit the tree
   // visitor.visit(tree);
 
+  std::ofstream os(argv[2]);
   BackEnd backend;
-  backend.emitMain();
-
-  // HOW TO WRITE OUT.
-  // std::ofstream out(argv[2]);
-  // out << "This is out...\n";
+  backend.emitModule();
+  backend.lowerDialects();
+  backend.dumpLLVM(os);
 
   return 0;
 }

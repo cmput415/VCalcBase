@@ -1,6 +1,5 @@
 {
-  "inDir": "<inDir>",
-  "outDir": "<outDir>",
+  "testDir": "<testDir>",
   "testedExecutablePaths": {
     "<team id>": "<path_to_vcalc_exe>"
   },
@@ -20,7 +19,7 @@
       },
       {
         "stepName": "lli",
-        "executablePath": "/cshome/cmput415/415-resources/llvm-project/build/bin/lli",
+        "executablePath": "<path_to_lli>",
         "arguments": [
          "$INPUT"
         ],
