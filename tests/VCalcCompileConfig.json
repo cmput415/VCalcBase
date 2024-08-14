@@ -1,11 +1,11 @@
 {
   "testDir": "testfiles",
   "testedExecutablePaths": {
-    "solution": "../bin/vcalc"
+    "<team-name>": "<path-to-vcalc>"
   },
   "runtimes": {
-    "solution": "../bin/libvcalcrt.so"
-  },
+    "<team-name>": "<path-to-runtime>"
+  }, 
   "toolchains": {
     "vcalc-llc": [
       {

@@ -1,10 +1,10 @@
 {
   "testDir": "testfiles/",
   "testedExecutablePaths": {
-    "meimar": "../bin/vcalc"
+    "<team-name>": "<path-to-vcalc>"
   },
   "runtimes": {
-    "meimar": "../bin/libvcalcrt.so"
+    "<team-name>": "<path-to-runtime>"
   },
   "toolchains": {
     "vcalc-lli": [
