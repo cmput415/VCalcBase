@@ -18,7 +18,7 @@
       {
         "stepName": "llc",
         "executablePath": "<path-to-llc>",
-        "arguments": ["-filetype=obj", "-relocation-model=pic", "$INPUT", "-o", "$OUTPUT"],
+        "arguments": ["-filetype=obj", "$INPUT", "-o", "$OUTPUT"],
         "output": "vcalc.o"
       },
       {
