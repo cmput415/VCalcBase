@@ -22,14 +22,13 @@ BackEnd::BackEnd() : loc(mlir::UnknownLoc::get(&context)) {
 }
 
 int BackEnd::emitModule() {
-    
+
+    // Create a main function 
     mlir::Type intType = mlir::IntegerType::get(&context, 32);
     auto mainType = mlir::LLVM::LLVMFunctionType::get(intType, {}, false);
     mlir::LLVM::LLVMFuncOp mainFunc = builder->create<mlir::LLVM::LLVMFuncOp>(loc, "main", mainType);
     mlir::Block *entry = mainFunc.addEntryBlock();
     builder->setInsertionPointToStart(entry);
-
-    /*--------------- Fill the MLIR module here ---------------*/
 
     // Get the integer format string we already created.   
     mlir::LLVM::GlobalOp formatString;
@@ -49,8 +48,6 @@ int BackEnd::emitModule() {
     mlir::Value zero = builder->create<mlir::LLVM::ConstantOp>(loc, intType, builder->getIntegerAttr(intType, 0));
     builder->create<mlir::LLVM::ReturnOp>(builder->getUnknownLoc(), zero);    
     
-    /*--------------- End filling MLIR module ---------------*/
-
     module.dump();
 
     if (mlir::failed(mlir::verify(module))) {
@@ -111,16 +108,16 @@ void BackEnd::setupPrintf() {
     builder->create<mlir::LLVM::LLVMFuncOp>(loc, "printf", llvmFnType);
 }
 
-void BackEnd::createGlobalString(const char *str, const char *string_name) {
+void BackEnd::createGlobalString(const char *str, const char *stringName) {
 
     mlir::Type charType = mlir::IntegerType::get(&context, 8);
 
     // create string and string type
-    auto mlir_string = mlir::StringRef(str, strlen(str) + 1);
-    auto mlir_string_ty = mlir::LLVM::LLVMArrayType::get(charType, mlir_string.size());
+    auto mlirString = mlir::StringRef(str, strlen(str) + 1);
+    auto mlirStringType = mlir::LLVM::LLVMArrayType::get(charType, mlirString.size());
 
-    builder->create<mlir::LLVM::GlobalOp>(loc, mlir_string_ty, /*isConstant=*/true,
-                            mlir::LLVM::Linkage::Internal, string_name,
-                            builder->getStringAttr(mlir_string), /*alignment=*/0);
+    builder->create<mlir::LLVM::GlobalOp>(loc, mlirStringType, /*isConstant=*/true,
+                            mlir::LLVM::Linkage::Internal, stringName,
+                            builder->getStringAttr(mlirString), /*alignment=*/0);
     return;
 }

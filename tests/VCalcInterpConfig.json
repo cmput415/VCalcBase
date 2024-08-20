@@ -1,0 +1,28 @@
+{
+  "testDir": "testfiles/",
+  "testedExecutablePaths": {
+    "<team-name>": "<path-to-vcalc>"
+  },
+  "runtimes": {
+    "<team-name>": "<path-to-runtime>"
+  },
+  "toolchains": {
+    "vcalc-lli": [
+      {
+        "stepName": "vcalc",
+        "executablePath": "$EXE",
+        "arguments": ["$INPUT", "$OUTPUT"],
+        "output": "/tmp/vcalc.ll",
+        "allowError": true
+      },
+      {
+        "stepName": "lli",
+        "executablePath": "<path-to-lli>",
+        "arguments": [ "$INPUT" ],
+        "usesInStr": true,
+        "usesRuntime": true,
+        "allowError": true
+      }
+    ] 
+  }
+}

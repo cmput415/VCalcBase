@@ -1,0 +1,40 @@
+{
+  "testDir": "testfiles",
+  "testedExecutablePaths": {
+    "<team-name>": "<path-to-vcalc>"
+  },
+  "runtimes": {
+    "<team-name>": "<path-to-runtime>"
+  }, 
+  "toolchains": {
+    "vcalc-llc": [
+      {
+        "stepName": "vcalc",
+        "executablePath": "$EXE",
+        "arguments": ["$INPUT", "$OUTPUT"],
+        "output": "vcalc.ll",
+        "allowError": true 
+      }, 
+      {
+        "stepName": "llc",
+        "executablePath": "<path-to-llc>",
+        "arguments": ["-filetype=obj", "$INPUT", "-o", "$OUTPUT"],
+        "output": "vcalc.o"
+      },
+      {
+        "stepName": "clang",
+        "executablePath": "/usr/bin/clang",
+        "arguments": ["$INPUT", "-o", "$OUTPUT", "-L$RT_PATH", "-l$RT_LIB"],
+        "output": "vcalc"
+      },
+      {
+        "stepName": "run",
+        "executablePath": "$INPUT",
+        "arguments": [],
+        "usesInStr": true,
+        "usesRuntime": true,
+        "allowError": true
+      }
+    ] 
+  }
+}
