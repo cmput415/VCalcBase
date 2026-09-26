@@ -24,6 +24,8 @@ target_link_libraries(vcalc PRIVATE
     antlr4-runtime
     ${llvm_libs}
     ${dialect_libs}
+    MLIRBuiltinToLLVMIRTranslation
+    MLIRLLVMToLLVMIRTranslation
     )
 
 # Symbolic link our executable to the base directory so we don't have to go searching for it.

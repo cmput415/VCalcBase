@@ -26,8 +26,8 @@ int BackEnd::emitModule() {
     // Create a main function 
     mlir::Type intType = mlir::IntegerType::get(&context, 32);
     auto mainType = mlir::LLVM::LLVMFunctionType::get(intType, {}, false);
-    mlir::LLVM::LLVMFuncOp mainFunc = builder->create<mlir::LLVM::LLVMFuncOp>(loc, "main", mainType);
-    mlir::Block *entry = mainFunc.addEntryBlock();
+    mlir::LLVM::LLVMFuncOp mainFunc = mlir::LLVM::LLVMFuncOp::create(*builder, loc, "main", mainType);
+    mlir::Block *entry = mainFunc.addEntryBlock(*builder);
     builder->setInsertionPointToStart(entry);
 
     // Get the integer format string we already created.   
@@ -38,15 +38,15 @@ int BackEnd::emitModule() {
     }
 
     // Get the format string and print 415
-    mlir::Value formatStringPtr = builder->create<mlir::LLVM::AddressOfOp>(loc, formatString); 
-    mlir::Value intToPrint = builder->create<mlir::LLVM::ConstantOp>(loc, intType, 415); 
+    mlir::Value formatStringPtr = mlir::LLVM::AddressOfOp::create(*builder, loc, formatString); 
+    mlir::Value intToPrint = mlir::LLVM::ConstantOp::create(*builder, loc, intType, 415); 
     mlir::ValueRange args = {formatStringPtr, intToPrint}; 
     mlir::LLVM::LLVMFuncOp printfFunc = module.lookupSymbol<mlir::LLVM::LLVMFuncOp>("printf"); 
-    builder->create<mlir::LLVM::CallOp>(loc, printfFunc, args);
+    mlir::LLVM::CallOp::create(*builder, loc, printfFunc, args);
 
     // Return 0
-    mlir::Value zero = builder->create<mlir::LLVM::ConstantOp>(loc, intType, builder->getIntegerAttr(intType, 0));
-    builder->create<mlir::LLVM::ReturnOp>(builder->getUnknownLoc(), zero);    
+    mlir::Value zero = mlir::LLVM::ConstantOp::create(*builder, loc, intType, builder->getIntegerAttr(intType, 0));
+    mlir::LLVM::ReturnOp::create(*builder, builder->getUnknownLoc(), zero);    
     
     module.dump();
 
@@ -62,7 +62,7 @@ int BackEnd::lowerDialects() {
     mlir::PassManager pm(&context);
 
     // Lower SCF to CF (ControlFlow)
-    pm.addPass(mlir::createConvertSCFToCFPass());
+    pm.addPass(mlir::createSCFToControlFlowPass());
 
     // Lower Arith to LLVM
     pm.addPass(mlir::createArithToLLVMConversionPass());
@@ -105,7 +105,7 @@ void BackEnd::setupPrintf() {
                                                         /*isVarArg=*/true);
 
     // Insert the printf function into the body of the parent module.
-    builder->create<mlir::LLVM::LLVMFuncOp>(loc, "printf", llvmFnType);
+    mlir::LLVM::LLVMFuncOp::create(*builder, loc, "printf", llvmFnType);
 }
 
 void BackEnd::createGlobalString(const char *str, const char *stringName) {
@@ -116,7 +116,7 @@ void BackEnd::createGlobalString(const char *str, const char *stringName) {
     auto mlirString = mlir::StringRef(str, strlen(str) + 1);
     auto mlirStringType = mlir::LLVM::LLVMArrayType::get(charType, mlirString.size());
 
-    builder->create<mlir::LLVM::GlobalOp>(loc, mlirStringType, /*isConstant=*/true,
+    mlir::LLVM::GlobalOp::create(*builder, loc, mlirStringType, /*isConstant=*/true,
                             mlir::LLVM::Linkage::Internal, stringName,
                             builder->getStringAttr(mlirString), /*alignment=*/0);
     return;
